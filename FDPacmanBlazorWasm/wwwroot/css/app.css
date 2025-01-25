@@ -1,0 +1,32 @@
+.game-board {
+    display: inline-block;
+    border: 1px solid #000;
+    outline: none;
+    background-color: black;
+}
+
+.game-row {
+    display: flex;
+}
+
+.game-cell {
+    width: 20px;
+    height: 20px;
+    background-size: cover;
+}
+
+.wall {
+    background-image: url('/images/wall.png');
+}
+
+.dot {
+    background-image: url('/images/dot.png');
+}
+
+.pacman {
+    background-image: url('/images/pacman.png');
+}
+
+.ghost {
+    background-image: url('/images/ghost.png');
+}

@@ -1,0 +1,100 @@
+﻿@page "/pacman"
+@inject IJSRuntime JS
+
+<h3>Pacman Game</h3>
+
+@if (game.IsGameOver)
+{
+    <div>
+        Game Over! Press F5 to restart.
+        @if (game.DotsCollected == game.TotalDots)
+        {
+            <div>Congratulations! You collected all dots in @game.ElapsedTime.TotalSeconds seconds.</div>
+        }
+        else
+        {
+            <div>You collected @game.DotsCollected dots.</div>
+        }
+    </div>
+}
+else
+{
+    <div>
+        <div>Time: @game.ElapsedTime.TotalSeconds seconds</div>
+        <div>Dots Collected: @game.DotsCollected</div>
+        <div class="game-board" @onkeydown="HandleKeyPress" tabindex="0">
+            @for (int y = 0; y < board.Length; y++)
+            {
+                <div class="game-row">
+                    @for (int x = 0; x < board[y].Length; x++)
+                    {
+                        <div class="game-cell @(GetCellClass(board[y][x]))"></div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    private FDPacmanConsole.Game game;
+    private char[][] board;
+
+    protected override void OnInitialized()
+    {
+        game = new FDPacmanConsole.Game();
+        board = new char[FDPacmanConsole.Game.Height][];
+        for (int i = 0; i < board.Length; i++)
+        {
+            board[i] = new char[FDPacmanConsole.Game.Width];
+        }
+        UpdateBoard();
+    }
+
+    private void HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (!game.IsGameOver)
+        {
+            switch (e.Key)
+            {
+                case "ArrowUp":
+                    game.MovePacman(0, -1);
+                    break;
+                case "ArrowDown":
+                    game.MovePacman(0, 1);
+                    break;
+                case "ArrowLeft":
+                    game.MovePacman(-1, 0);
+                    break;
+                case "ArrowRight":
+                    game.MovePacman(1, 0);
+                    break;
+            }
+            game.Update();
+            UpdateBoard();
+        }
+    }
+
+    private void UpdateBoard()
+    {
+        for (int y = 0; y < FDPacmanConsole.Game.Height; y++)
+        {
+            for (int x = 0; x < FDPacmanConsole.Game.Width; x++)
+            {
+                board[y][x] = game.GetBoardChar(y, x);
+            }
+        }
+    }
+
+    private string GetCellClass(char cell)
+    {
+        return cell switch
+        {
+            '#' => "wall",
+            '.' => "dot",
+            'P' => "pacman",
+            'G' => "ghost",
+            _ => ""
+        };
+    }
+}
