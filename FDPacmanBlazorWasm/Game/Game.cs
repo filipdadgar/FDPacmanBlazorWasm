@@ -51,6 +51,9 @@ namespace FDPacmanConsole
             GenerateDots(10); // Generate a fixed number of dots
             Console.WriteLine("Number of dots: " + _totalDots);
 
+            // Add random walls
+            GenerateWalls(10); // Generate a fixed number of walls
+
             // Add Pacman
             entities.Add(new Pacman(Height / 2, Width / 2));
             board[Height / 2, Width / 2] = 'P';
@@ -63,6 +66,53 @@ namespace FDPacmanConsole
                 entities.Add(new Ghost(ghostY, ghostX));
                 board[ghostY, ghostX] = 'G';
             }
+        }
+
+        private void GenerateWalls(int numberOfWalls)
+        {
+            Random random = new Random();
+            int wallsPlaced = 0;
+
+            while (wallsPlaced < numberOfWalls)
+            {
+                int x = random.Next(1, Width - 1);
+                int y = random.Next(1, Height - 1);
+
+                if (board[y, x] == ' ' && !IsCornerBlocked(x, y))
+                {
+                    board[y, x] = '#';
+                    wallsPlaced++;
+                }
+            }
+        }
+
+        private bool IsCornerBlocked(int x, int y)
+        {
+            // Check if placing a wall here would block a dot in a corner
+            if (board[y, x] == '.')
+            {
+                return true;
+            }
+
+            // Check surrounding cells to ensure no corner is blocked
+            if (x > 1 && y > 1 && board[y - 1, x] == '.' && board[y, x - 1] == '.')
+            {
+                return true;
+            }
+            if (x < Width - 2 && y > 1 && board[y - 1, x] == '.' && board[y, x + 1] == '.')
+            {
+                return true;
+            }
+            if (x > 1 && y < Height - 2 && board[y + 1, x] == '.' && board[y, x - 1] == '.')
+            {
+                return true;
+            }
+            if (x < Width - 2 && y < Height - 2 && board[y + 1, x] == '.' && board[y, x + 1] == '.')
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private void GenerateDots(int numberOfDots)
@@ -262,7 +312,8 @@ namespace FDPacmanConsole
         }
     }
 
-
 }
+
+
 
 
