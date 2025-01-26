@@ -1,6 +1,6 @@
 {
   "name": "FDPacmanBlazorWasm",
-  "short_name": "FDPacmanBlazorWasm",
+  "short_name": "Pacman",
   "id": "./",
   "start_url": "./",
   "display": "standalone",
