@@ -47,12 +47,12 @@ namespace FDPacmanConsole
                 board[y, Width - 1] = '#';
             }
 
+            // Add random walls
+            GenerateWalls(10); // Generate a fixed number of walls
+
             // Add dots
             GenerateDots(10); // Generate a fixed number of dots
             Console.WriteLine("Number of dots: " + _totalDots);
-
-            // Add random walls
-            GenerateWalls(10); // Generate a fixed number of walls
 
             // Add Pacman
             entities.Add(new Pacman(Height / 2, Width / 2));

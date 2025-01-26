@@ -10,23 +10,27 @@
 }
 
 .game-cell {
-    width: 20px;
-    height: 20px;
+    width: 40px; /* Increased from 20px to 40px */
+    height: 40px; /* Increased from 20px to 40px */
     background-size: cover;
 }
 
 .wall {
     background-image: url('/images/wall.png');
+    background-size: 40px 40px; /* Ensure the image scales correctly */
 }
 
 .dot {
     background-image: url('/images/dot.png');
+    background-size: 40px 40px; /* Ensure the image scales correctly */
 }
 
 .pacman {
     background-image: url('/images/pacman.png');
+    background-size: 40px 40px; /* Ensure the image scales correctly */
 }
 
 .ghost {
     background-image: url('/images/ghost.png');
+    background-size: 40px 40px; /* Ensure the image scales correctly */
 }
