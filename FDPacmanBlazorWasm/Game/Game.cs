@@ -1,4 +1,5 @@
 using FDPacmanBlazorWasm.Game;
+using System;
 
 namespace FDPacmanConsole
 {
@@ -47,17 +48,7 @@ namespace FDPacmanConsole
             }
 
             // Add dots
-            for (int y = 1; y < Height - 1; y++)
-            {
-                for (int x = 1; x < Width - 1; x++)
-                {
-                    if ((x + y) % 2 == 0)
-                    {
-                        board[y, x] = '.';
-                        _totalDots++;
-                    }
-                }
-            }
+            GenerateDots(10); // Generate a fixed number of dots
             Console.WriteLine("Number of dots: " + _totalDots);
 
             // Add Pacman
@@ -71,6 +62,25 @@ namespace FDPacmanConsole
                 int ghostY = i * 4;
                 entities.Add(new Ghost(ghostY, ghostX));
                 board[ghostY, ghostX] = 'G';
+            }
+        }
+
+        private void GenerateDots(int numberOfDots)
+        {
+            Random random = new Random();
+            int dotsPlaced = 0;
+
+            while (dotsPlaced < numberOfDots)
+            {
+                int x = random.Next(1, Width - 1);
+                int y = random.Next(1, Height - 1);
+
+                if (board[y, x] == ' ')
+                {
+                    board[y, x] = '.';
+                    dotsPlaced++;
+                    _totalDots++;
+                }
             }
         }
 
@@ -143,7 +153,7 @@ namespace FDPacmanConsole
                 // Check collision with dots
                 if (board[newY, newX] == '.')
                 {
-                    EatDot(pacman);
+                    EatDot(newY, newX);
                     dotsCollected++;
                     Console.WriteLine($"Dot collected. Total dots collected: {dotsCollected}");
                 }
@@ -156,11 +166,10 @@ namespace FDPacmanConsole
             }
         }
 
-        private void EatDot(Pacman pacman)
+        private void EatDot(int y, int x)
         {
             // Simple dot eating logic
-            // You can add scoring here if needed
-            board[pacman.Y, pacman.X] = ' ';
+            board[y, x] = ' ';
         }
 
         public void Update()
@@ -196,10 +205,19 @@ namespace FDPacmanConsole
                 return; // Can't move out of bounds or into walls
             }
 
-            board[ghost.Y, ghost.X] = ' ';
+            // Store the character under the ghost
+            char underGhost = board[newY, newX];
+            Console.WriteLine($"Ghost moving from ({ghost.Y}, {ghost.X}) to ({newY}, {newX}). UnderChar: {underGhost}");
+
+            // Move the ghost
+            board[ghost.Y, ghost.X] = ghost.UnderChar;
+            ghost.UnderChar = underGhost == 'G' || underGhost == 'P' ? ' ' : underGhost;
             board[newY, newX] = 'G';
             ghost.X = newX;
             ghost.Y = newY;
+
+            // Debug information
+            Console.WriteLine($"Ghost moved to ({newY}, {newX}). New UnderChar: {ghost.UnderChar}");
         }
 
         private void CheckCollisions()
@@ -243,4 +261,8 @@ namespace FDPacmanConsole
             }
         }
     }
+
+
 }
+
+

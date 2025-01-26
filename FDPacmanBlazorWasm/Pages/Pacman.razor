@@ -9,7 +9,7 @@
         Game Over! Press F5 to restart.
         @if (game.DotsCollected == game.TotalDots)
         {
-            <div>Congratulations! You collected all dots in @game.ElapsedTime.TotalSeconds seconds.</div>
+            <div>Congratulations! You collected all dots in @elapsedTime.TotalSeconds seconds.</div>
         }
         else
         {
@@ -20,7 +20,7 @@
 else
 {
     <div>
-        <div>Time: @game.ElapsedTime.TotalSeconds seconds</div>
+        <div>Time: @elapsedTime.TotalSeconds seconds</div>
         <div>Dots Collected: @game.DotsCollected</div>
         <div class="game-board" @onkeydown="HandleKeyPress" tabindex="0">
             @for (int y = 0; y < board.Length; y++)
@@ -39,6 +39,8 @@ else
 @code {
     private FDPacmanConsole.Game game;
     private char[][] board;
+    private Timer timer;
+    private TimeSpan elapsedTime;
 
     protected override void OnInitialized()
     {
@@ -49,6 +51,7 @@ else
             board[i] = new char[FDPacmanConsole.Game.Width];
         }
         UpdateBoard();
+        timer = new Timer(UpdateElapsedTime, null, 0, 1000);
     }
 
     private void HandleKeyPress(KeyboardEventArgs e)
@@ -83,6 +86,19 @@ else
             {
                 board[y][x] = game.GetBoardChar(y, x);
             }
+        }
+    }
+
+    private void UpdateElapsedTime(object state)
+    {
+        if (!game.IsGameOver)
+        {
+            elapsedTime = game.ElapsedTime;
+            InvokeAsync(StateHasChanged);
+        }
+        else
+        {
+            timer.Dispose();
         }
     }
 
