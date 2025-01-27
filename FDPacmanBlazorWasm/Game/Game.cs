@@ -17,6 +17,8 @@ namespace FDPacmanConsole
         public bool IsGameOver { get; private set; } = false;
         public int DotsCollected => dotsCollected;
         public TimeSpan ElapsedTime => DateTime.Now - startTime;
+        // Add a single Random instance at the class level
+        private readonly Random random = new Random();
 
         public Game()
         {
@@ -70,7 +72,7 @@ namespace FDPacmanConsole
 
         private void GenerateWalls(int numberOfWalls)
         {
-            Random random = new Random();
+            // Random random = new Random();
             int wallsPlaced = 0;
 
             while (wallsPlaced < numberOfWalls)
@@ -117,7 +119,7 @@ namespace FDPacmanConsole
 
         private void GenerateDots(int numberOfDots)
         {
-            Random random = new Random();
+            //Random random = new Random();
             int dotsPlaced = 0;
 
             while (dotsPlaced < numberOfDots)
@@ -243,31 +245,46 @@ namespace FDPacmanConsole
         private void MoveGhost(Ghost ghost)
         {
             // Simple AI: move randomly
-            Random random = new Random();
+            // Random random = new Random();
             int xDelta = random.Next(-1, 2); // -1, 0, or +1
             int yDelta = random.Next(-1, 2);
 
             int newX = ghost.X + xDelta;
             int newY = ghost.Y + yDelta;
 
+            // Don't move if hitting bounds or walls
             if (newX < 0 || newX >= Width || newY < 0 || newY >= Height || board[newY, newX] == '#')
             {
-                return; // Can't move out of bounds or into walls
+                return;
             }
 
-            // Store the character under the ghost
-            char underGhost = board[newY, newX];
-            Console.WriteLine($"Ghost moving from ({ghost.Y}, {ghost.X}) to ({newY}, {newX}). UnderChar: {underGhost}");
+            // Store what's currently at the new position
+            char newPositionChar = board[newY, newX];
 
-            // Move the ghost
+            // Restore the previous position with what was under the ghost
             board[ghost.Y, ghost.X] = ghost.UnderChar;
-            ghost.UnderChar = underGhost == 'G' || underGhost == 'P' ? ' ' : underGhost;
-            board[newY, newX] = 'G';
+
+            // Update ghost's position
             ghost.X = newX;
             ghost.Y = newY;
 
-            // Debug information
-            Console.WriteLine($"Ghost moved to ({newY}, {newX}). New UnderChar: {ghost.UnderChar}");
+            // If moving to a position with a dot, keep the dot for later restoration
+            if (newPositionChar == '.')
+            {
+                ghost.UnderChar = '.';
+            }
+            else if (newPositionChar == 'G' || newPositionChar == 'P')
+            {
+                // If moving to a position with another entity, the underlying space is empty
+                ghost.UnderChar = ' ';
+            }
+            else
+            {
+                ghost.UnderChar = newPositionChar;
+            }
+
+            // Place ghost at new position
+            board[newY, newX] = 'G';
         }
 
         private void CheckCollisions()
